@@ -1,0 +1,102 @@
+# commands
+
+$ py -m venv .venv
+$ py -m pip install httpx
+$ py
+
+>>> import httpx
+>>> httpx.get("https://example.com/")
+<Response [200 OK]>
+
+pip --python=.venv install httpx
+pip --without-pip install httpx
+
+$ pip config set global.require-virtualenv true
+
+# pipx in a nutshell
+$ mkdir -p ~/.local/bin
+$ export PATH="$HOME/.local/bin:$PATH"
+$ py -m venv black
+$ black/bin/python -m pip install black
+$ cp black/bin/black ~/.local/bin
+$ black --version
+black, 24.2.0 (compiled: yes)
+Python (CPython) 3.12.2
+
+# pipx
+$ apt install pipx
+$ pipx ensurepath
+$ py -m pip install --user pipx
+$ py -m pipx ensurepath
+$ pipx completions  # shell completions
+
+$ pipx install black
+$ pipx upgrade black
+$ pipx reinstall black
+$ pipx uninstall black
+$ pipx list
+$ pipx install hatch
+$ pipx inject hatch hatch-vcs
+$ pipx run cowsay moo  # --no-cache option
+$ pipx run --spec pip-tools pip-sync
+
+$ export PIPX_DEFAULT_PYTHON=python3.12 # Linux and macOS
+> setx PIPX_DEFAULT_PYTHON python3.12   # Windows
+$ pip config set global.index-url https://example.com
+$ export PIP_INDEX_URL=https://example.com
+
+# Finders and Loaders
+
+# The import system finds and loads modules using two kinds of objects. Finders (importlib.abc.MetaPathFinder) are responsible for locating modules given their fully qualified names. When successful, their find_spec method returns a module spec with a loader; otherwise, it returns None. Loaders (importlib.abc.Loader) are objects with an exec_module function that load and execute the module’s code. The function takes a module object and uses it as a namespace when executing the module. The finder and loader can be the same object, which is then known as an importer.
+
+# Finders are registered in the sys.meta_path variable, and the import system tries each finder in turn. When a finder has returned a module spec with a loader, the import system creates and initializes a module object, then passes it to the loader for execution.
+
+# By default, the sys.meta_path variable contains three finders, which handle different kinds of modules (see “Python modules”):
+
+#     importlib.machinery.BuiltinImporter for built-in modules
+
+#     importlib.machinery.FrozenImporter for frozen modules
+
+#     importlib.machinery.PathFinder to search modules on sys.path
+
+# The PathFinder is the central hub of the import machinery. It’s responsible for every module that’s not embedded into the interpreter, and searches sys.path to locate it.9 The path finder uses a second level of finder objects known as path entry finders (importlib.abc.PathEntryFinder), each of which finds modules under a specific location on sys.path. The standard library provides two types of path entry finders, registered under sys.path_hooks:
+
+#     zipimport.zipimporter to import modules from zip archives
+
+#     importlib.machinery.FileFinder to import modules from a directory
+
+# Typically, modules are stored in directories on the filesystem, so PathFinder delegates its work to a FileFinder. The latter scans the directory for the module and uses its file extension to determine the appropriate loader. There are three loaders for the different kinds of modules:
+
+#     importlib.machinery.SourceFileLoader for pure Python modules
+
+#     importlib.machinery.SourcelessFileLoader for bytecode modules
+
+#     importlib.machinery.ExtensionFileLoader for binary extension modules
+
+# The zip importer works similarly, except that it doesn’t support extension modules because current operating systems don’t allow loading dynamic libraries from a zip archive.
+
+$ py -m site
+sys.path = [
+    '/home/user',
+    '/usr/local/lib/python312.zip',
+    '/usr/local/lib/python3.12',
+    '/usr/local/lib/python3.12/lib-dynload',
+    '/home/user/.local/lib/python3.12/site-packages',
+    '/usr/local/lib/python3.12/site-packages',
+]
+USER_BASE: '/home/user/.local' (exists)
+USER_SITE: '/home/user/.local/lib/python3.12/site-packages' (exists)
+ENABLE_USER_SITE: True
+
+# with the -IP switches
+$ py -IPm site
+sys.path = [
+    '/usr/local/lib/python312.zip',
+    '/usr/local/lib/python3.12',
+    '/usr/local/lib/python3.12/lib-dynload',
+    '/usr/local/lib/python3.12/site-packages',
+]
+USER_BASE: '/home/user/.local' (exists)
+USER_SITE: '/home/user/.local/lib/python3.12/site-packages' (exists)
+ENABLE_USER_SITE: False
+
